@@ -72,13 +72,14 @@ namespace L5R5eDice
                             {
                                 success += 1;
                                 extraSuccess += roller.Results.Success + roller.Results.Explode - tn;
+                                opportunity += roller.Results.Opportunity;
                             }
                             else
                             {
                                 failure += 1;
                             }
                             
-                            opportunity += roller.Results.Opportunity;
+                            
                             strife += roller.Results.Strife;
                         }
                         success /= repeats;
