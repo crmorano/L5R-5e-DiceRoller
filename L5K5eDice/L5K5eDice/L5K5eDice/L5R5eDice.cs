@@ -589,6 +589,75 @@ namespace L5R5eDice
             return (successes >= TN);
         }
 
+        public void RollCompletelyRandom(int Skill, int Ring)
+        {
+            RolledDice = new List<Die>();
+            KeptDice = new List<Die>();
+
+            Kept = Ring;
+            Rolled = Skill + Ring;
+
+            //Doesn't matter, just needs to exist
+            L5rDiceWeight successWeights = new L5rDiceWeight(7, -2, 3, 14, 0, 1, -5);
+
+            //Now roll the dice.
+            RollBaseDice(Skill, Ring, successWeights);
+
+            //Keep the correct number at random.
+            for(int i = 0; i < Kept; i++)
+            {
+                int val = rnd.Next(RolledDice.Count);
+                KeptDice.Add(RolledDice[val]);
+                RolledDice.RemoveAt(val);
+            }
+
+            //Now Check for exploding dice.  If it explodes, give it a chance to keep it.
+            int chance = 50; //Chance out of 100 to keep an exploded die.
+
+            for (int i = 0; i < KeptDice.Count; i++)
+            {
+                if (KeptDice[i].Result.Explode > 0)
+                {
+                    if (KeptDice[i] is SkillDie)
+                    {
+                        SkillDie newDie = new SkillDie(true);
+                        newDie.Roll(RollSkill(), successWeights);
+
+                        if (rnd.Next(100) < chance)
+                        {
+                            KeptDice.Add(newDie);
+                            Kept++;
+                        }
+                        else
+                        {
+                            RolledDice.Add(newDie);
+                            Rolled++;
+                        }
+                    }
+                    else if (KeptDice[i] is RingDie)
+                    {
+                        RingDie newDie = new RingDie(true);
+                        newDie.Roll(RollRing(), successWeights);
+
+
+                        if (rnd.Next(100) < chance)
+                        {
+                            KeptDice.Add(newDie);
+                            Kept++;
+                        }
+                        else
+                        {
+                            RolledDice.Add(newDie);
+                            Rolled++;
+                        }
+                    }                    
+                }
+            }
+
+            //Math up the result totals.
+            CalcResults();
+        }
+
         //Prints out each Dice in their current order.
         public override string ToString()
         {

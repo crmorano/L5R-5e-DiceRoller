@@ -10,14 +10,14 @@ namespace L5R5eDice
     class Program
     {
 
-        static void RollForSuccess()
+        static void RollForSuccess(int repeats)
         {
             StreamWriter write = new StreamWriter("Success.txt");
             L5R5eDice roller = new L5R5eDice();
             double success = 0.0;
             double opp = 0.0;
             double strife = 0.0;
-            int repeats = 100000;
+            //int repeats = 100000;
 
             for (int ring = 1; ring < 6; ring++)
             {
@@ -43,7 +43,40 @@ namespace L5R5eDice
             write.Close();
         }
 
-        static void RollForOpp()
+        static void RollAtRandom(int repeats)
+        {
+            StreamWriter write = new StreamWriter("Random.txt");
+            L5R5eDice roller = new L5R5eDice();
+            double success = 0.0;
+            double opp = 0.0;
+            double strife = 0.0;
+            //int repeats = 100000;
+
+            for (int ring = 1; ring < 6; ring++)
+            {
+                for (int skill = 0; skill < 6; skill++)
+                {
+                    success = 0.0;
+                    opp = 0.0;
+                    strife = 0.0;
+                    for (int i = 0; i < repeats; i++)
+                    {
+                        roller.RollCompletelyRandom(skill, ring);
+                        success += roller.Results.Success + roller.Results.Explode;
+                        opp += roller.Results.Opportunity;
+                        strife += roller.Results.Strife;
+                    }
+                    success /= repeats;
+                    opp /= repeats;
+                    strife /= repeats;
+                    Console.WriteLine("{0}k{1}: Success: {2:F2}, Opportunity: {3:F2}, Strife: {4:F2}", (skill + ring), ring, success, opp, strife);
+                    write.WriteLine("{0}k{1}: Success: {2:F2}, Opportunity: {3:F2}, Strife: {4:F2}", (skill + ring), ring, success, opp, strife);
+                }
+            }
+            write.Close();
+        }
+
+        static void RollForOpp(int repeats)
         {
             StreamWriter write = new StreamWriter("Opportunity.txt");
             L5R5eDice roller = new L5R5eDice();
@@ -52,7 +85,7 @@ namespace L5R5eDice
             double failure = 0.0;
             double strife = 0.0;
             double opportunity = 0.0;
-            int repeats = 100000;
+            //int repeats = 100000;
 
 
             for (int ring = 1; ring < 6; ring++)
@@ -109,13 +142,14 @@ namespace L5R5eDice
             //roller.TestStatWeight(successOppWeights);
             //for (int i = 0; i < 10; i++)
             //{
-            //    roller.RollForOpp(3, 3, 2);
+            //    roller.RollCompletelyRandom(3, 3);
 
             //    Console.WriteLine(roller);
             //}
 
-            RollForOpp();
-            RollForSuccess();
+            RollForOpp(1000000);
+            RollForSuccess(1000000);
+            RollAtRandom(1000000);
 
             Console.ReadLine();
 
